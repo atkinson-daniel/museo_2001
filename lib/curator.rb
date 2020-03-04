@@ -22,16 +22,12 @@ class Curator
   end
 
   def photographs_by_artist
-    artists_collection = @artists.reduce({}) do |accum, artist|
-      accum[artist] = []
+    @photographs.reduce({}) do |accum, photo|
+      artist = find_artist_by_id(photo.artist_id)
+      accum[artist] = [] if accum[artist].nil?
+      accum[artist] << photo
       accum
     end
-
-    @photographs.each do |photograph|
-      artist = find_artist_by_id(photograph.artist_id)
-      artists_collection[artist] << photograph
-    end
-    artists_collection
   end
 
   def artists_with_multiple_photographs
