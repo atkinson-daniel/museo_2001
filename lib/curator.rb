@@ -22,11 +22,11 @@ class Curator
   end
 
   def photographs_by_artist
-    @photographs.reduce({}) do |accum, photo|
+    @photographs.reduce({}) do |artist_by_photos, photo|
       artist = find_artist_by_id(photo.artist_id)
-      accum[artist] = [] if accum[artist].nil?
-      accum[artist] << photo
-      accum
+      artist_by_photos[artist] = [] if artist_by_photos[artist].nil?
+      artist_by_photos[artist] << photo
+      artist_by_photos
     end
   end
 
@@ -45,8 +45,8 @@ class Curator
   def load_photographs(filepath)
     csv = CSV.read("#{filepath}", headers: true, header_converters: :symbol)
     csv.map do |row|
-     @photographs << Photograph.new(row)
-   end
+      @photographs << Photograph.new(row)
+    end
   end
 
   def load_artists(filepath)
@@ -64,10 +64,10 @@ class Curator
 
   def artists_photographs_by_age(artist)
     artist_photos = photographs_by_artist[artist]
-    artist_photos.reduce({}) do |accum, photo|
+    artist_photos.reduce({}) do |age_by_photo, photo|
       age = photo.year.to_i - artist.born.to_i
-      accum[age] = photo.name
-      accum
+      age_by_photo[age] = photo.name
+      age_by_photo
     end
   end
 end
