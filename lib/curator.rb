@@ -31,19 +31,15 @@ class Curator
   end
 
   def artists_with_multiple_photographs
-    found = photographs_by_artist.select do |artist, photographs|
-      photographs.length > 1
-    end
-
-    found.map {|artist, photographs| artist.name}
+    photographs_by_artist.map do |artist, photographs|
+      artist.name if photographs.length > 1
+    end.compact
   end
 
   def photographs_taken_by_artist_from(country)
-    found = photographs_by_artist.select do |artist, photographs|
-      artist.country == country
-    end
-
-    found.flat_map {|artist, photographs| photographs}
+    photographs_by_artist.flat_map do |artist, photographs|
+      photographs if artist.country == country
+    end.compact
   end
 
   def load_photographs(filepath)
