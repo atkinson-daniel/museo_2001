@@ -1,4 +1,3 @@
-require_relative 'photograph'
 require 'csv'
 
 class Curator
