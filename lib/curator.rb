@@ -1,3 +1,6 @@
+require_relative 'photograph'
+require 'csv'
+
 class Curator
   attr_reader :photographs, :artists
 
@@ -45,5 +48,34 @@ class Curator
     end
 
     found.flat_map {|artist, photographs| photographs}
+  end
+
+  def load_photographs(filepath)
+    csv = CSV.read("#{filepath}", headers: true, header_converters: :symbol)
+    csv.map do |row|
+     @photographs << Photograph.new(row)
+   end
+  end
+
+  def load_artists(filepath)
+    csv = CSV.read("#{filepath}", headers: true, header_converters: :symbol)
+    csv.map do |row|
+     @artists << Artist.new(row)
+   end
+  end
+
+  def photographs_taken_between(date_range)
+    @photographs.find_all do |photo|
+      date_range.to_a.include?(photo.year.to_i)
+    end
+  end
+
+  def artists_photographs_by_age(artist)
+    artist_photos = photographs_by_artist[artist]
+    artist_photos.reduce({}) do |accum, photo|
+      age = photo.year.to_i - artist.born.to_i
+      accum[age] = photo.name
+      accum
+    end
   end
 end
